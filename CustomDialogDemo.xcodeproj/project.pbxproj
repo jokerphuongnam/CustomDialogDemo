@@ -14,7 +14,10 @@
 		C4C7FF11282A0F4D00471474 /* CustomDialogDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C7FF10282A0F4D00471474 /* CustomDialogDemoTests.swift */; };
 		C4C7FF1B282A0F4D00471474 /* CustomDialogDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C7FF1A282A0F4D00471474 /* CustomDialogDemoUITests.swift */; };
 		C4C7FF1D282A0F4D00471474 /* CustomDialogDemoUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C7FF1C282A0F4D00471474 /* CustomDialogDemoUITestsLaunchTests.swift */; };
-		C4C7FF2A282A101800471474 /* ExtensionDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C7FF29282A101700471474 /* ExtensionDialog.swift */; };
+		C4C7FF2A282A101800471474 /* CustomDialogIsPresent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C7FF29282A101700471474 /* CustomDialogIsPresent.swift */; };
+		C4EECA1B282E3BD4000C64C2 /* CustomDialogHashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EECA1A282E3BD4000C64C2 /* CustomDialogHashable.swift */; };
+		C4EECA1E282E3E71000C64C2 /* IsPresentedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EECA1D282E3E71000C64C2 /* IsPresentedView.swift */; };
+		C4EECA20282E3EC3000C64C2 /* HashableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EECA1F282E3EC3000C64C2 /* HashableView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +48,10 @@
 		C4C7FF16282A0F4D00471474 /* CustomDialogDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CustomDialogDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4C7FF1A282A0F4D00471474 /* CustomDialogDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogDemoUITests.swift; sourceTree = "<group>"; };
 		C4C7FF1C282A0F4D00471474 /* CustomDialogDemoUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogDemoUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		C4C7FF29282A101700471474 /* ExtensionDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionDialog.swift; sourceTree = "<group>"; };
+		C4C7FF29282A101700471474 /* CustomDialogIsPresent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomDialogIsPresent.swift; sourceTree = "<group>"; };
+		C4EECA1A282E3BD4000C64C2 /* CustomDialogHashable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialogHashable.swift; sourceTree = "<group>"; };
+		C4EECA1D282E3E71000C64C2 /* IsPresentedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsPresentedView.swift; sourceTree = "<group>"; };
+		C4EECA1F282E3EC3000C64C2 /* HashableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashableView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,9 +102,11 @@
 		C4C7FEFE282A0F4800471474 /* CustomDialogDemo */ = {
 			isa = PBXGroup;
 			children = (
-				C4C7FF29282A101700471474 /* ExtensionDialog.swift */,
+				C4EECA1C282E3BE8000C64C2 /* CustomDialog */,
 				C4C7FEFF282A0F4900471474 /* CustomDialogDemoApp.swift */,
 				C4C7FF01282A0F4900471474 /* ContentView.swift */,
+				C4EECA1D282E3E71000C64C2 /* IsPresentedView.swift */,
+				C4EECA1F282E3EC3000C64C2 /* HashableView.swift */,
 				C4C7FF03282A0F4D00471474 /* Assets.xcassets */,
 				C4C7FF05282A0F4D00471474 /* Preview Content */,
 			);
@@ -128,6 +136,15 @@
 				C4C7FF1C282A0F4D00471474 /* CustomDialogDemoUITestsLaunchTests.swift */,
 			);
 			path = CustomDialogDemoUITests;
+			sourceTree = "<group>";
+		};
+		C4EECA1C282E3BE8000C64C2 /* CustomDialog */ = {
+			isa = PBXGroup;
+			children = (
+				C4C7FF29282A101700471474 /* CustomDialogIsPresent.swift */,
+				C4EECA1A282E3BD4000C64C2 /* CustomDialogHashable.swift */,
+			);
+			path = CustomDialog;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -260,9 +277,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4EECA20282E3EC3000C64C2 /* HashableView.swift in Sources */,
+				C4EECA1B282E3BD4000C64C2 /* CustomDialogHashable.swift in Sources */,
 				C4C7FF02282A0F4900471474 /* ContentView.swift in Sources */,
-				C4C7FF2A282A101800471474 /* ExtensionDialog.swift in Sources */,
+				C4C7FF2A282A101800471474 /* CustomDialogIsPresent.swift in Sources */,
 				C4C7FF00282A0F4900471474 /* CustomDialogDemoApp.swift in Sources */,
+				C4EECA1E282E3E71000C64C2 /* IsPresentedView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

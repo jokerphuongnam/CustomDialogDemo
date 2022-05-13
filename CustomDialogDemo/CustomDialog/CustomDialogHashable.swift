@@ -1,35 +1,40 @@
 //
-//  CustomDialog.swift
-//  gannha
+//  CustomDialogHashable.swift
+//  CustomDialogDemo
 //
-//  Created by gannha on 10/05/2022.
+//  Created by gannha on 13/05/2022.
 //
 
 import SwiftUI
 
-private struct CustomDialogModifier<Body>: ViewModifier where Body: View {
-    @Binding private var isPresented: Bool
+private struct CustomDialogModifier<Body, V>: ViewModifier where Body: View, V: Hashable {
+    @Binding private var selection: V?
+    private let tag: V
     fileprivate typealias OnDismiss = (() -> ())
     private let onDismiss: OnDismiss?
     private let body: Body
     private let cancellable: Cancellable
     init(
-        isPresented: Binding<Bool>,
+        selection: Binding<V?>,
+        tag: V,
         isEnableCancel: Bool,
         onDismiss: OnDismiss?,
         @ViewBuilder body: @escaping () -> Body) {
-            self._isPresented = isPresented
+            self._selection = selection
+            self.tag = tag
             self.cancellable = .enable(isEnable: isEnableCancel)
             self.onDismiss = onDismiss
             self.body = body()
         }
     
     init(
-        isPresented: Binding<Bool>,
+        selection: Binding<V?>,
+        tag: V,
         timeInterval: Int,
         onDismiss: OnDismiss?,
         @ViewBuilder body: @escaping () -> Body) {
-            self._isPresented = isPresented
+            self._selection = selection
+            self.tag = tag
             self.cancellable = .timeIntervel(timeInterval: timeInterval)
             self.onDismiss = onDismiss
             self.body = body()
@@ -39,18 +44,25 @@ private struct CustomDialogModifier<Body>: ViewModifier where Body: View {
         content
             .overlay(contentOverlay, alignment: .center)
             .fullScreenCover(
-                isPresented: $isPresented,
+                isPresented: Binding(get: {
+                    selection == tag
+                }, set: { newValue in
+                    if newValue {
+                        
+                    } else {
+                        selection = nil
+                    }
+                }),
                 onDismiss: onDismiss) {
                     body
                         .background(
                             background
                                 .onAppear {
                                     switch cancellable {
-                                    case .enable(let isEnable):
-                                        break
+                                    case .enable(_): break
                                     case .timeIntervel(let timeInterval):
                                         DispatchQueue.main.asyncAfter(deadline: .now() + DispatchTimeInterval.milliseconds(timeInterval)) {
-                                            isPresented = false
+                                            selection = nil
                                         }
                                     }
                                 })
@@ -58,7 +70,7 @@ private struct CustomDialogModifier<Body>: ViewModifier where Body: View {
     }
     
     @ViewBuilder private var contentOverlay: some View {
-        if isPresented {
+        if selection != nil {
             let size = UIScreen.main.bounds
             Color.black
                 .opacity(0.4)
@@ -75,9 +87,9 @@ private extension CustomDialogModifier {
     var background: some View {
         switch cancellable {
         case .enable(let isEnableCancel):
-            BackgroundDialog(isPresented: $isPresented, isEnableCancel: isEnableCancel)
+            BackgroundDialog(selection: $selection, isEnableCancel: isEnableCancel)
         case .timeIntervel(_):
-            BackgroundDialog(isPresented: $isPresented, isEnableCancel: false)
+            BackgroundDialog(selection: $selection, isEnableCancel: false)
         }
     }
 }
@@ -89,11 +101,11 @@ private extension CustomDialogModifier {
     }
 }
 
-private struct BackgroundDialog: UIViewRepresentable {
-    @Binding fileprivate var isPresented: Bool
+private struct BackgroundDialog<V>: UIViewRepresentable where V: Hashable {
+    @Binding fileprivate var selection: V?
     private let isEnableCancel: Bool
-    init(isPresented: Binding<Bool>, isEnableCancel: Bool) {
-        self._isPresented = isPresented
+    init(selection: Binding<V?>, isEnableCancel: Bool) {
+        self._selection = selection
         self.isEnableCancel = isEnableCancel
     }
     func makeUIView(context: Context) -> UIView {
@@ -137,28 +149,30 @@ private struct BackgroundDialog: UIViewRepresentable {
             let frame = view.frame
             if !(0...frame.width).contains(touchPoint.x) ||
                 !(0...frame.height).contains(touchPoint.y) {
-                parent.isPresented = false
+                parent.selection = nil
             }
         }
     }
 }
 
 public extension View {
-    func dialog<Content>(
-        isPresented: Binding<Bool>,
+    func dialog<Content, V>(
+        selection: Binding<V?>,
+        tag: V,
         isEnableCancel: Bool = true,
         onDismiss: (() -> ())? = nil,
         @ViewBuilder content: @escaping () -> Content) -> some View
-    where Content: View {
-        modifier(CustomDialogModifier(isPresented: isPresented, isEnableCancel: isEnableCancel, onDismiss: onDismiss, body: content))
+    where Content: View, V: Hashable {
+        modifier(CustomDialogModifier(selection: selection, tag: tag, isEnableCancel: isEnableCancel, onDismiss: onDismiss, body: content))
     }
     
-    func dialog<Content>(
-        isPresented: Binding<Bool>,
+    func dialog<Content, V>(
+        selection: Binding<V?>,
+        tag: V,
         timeInterval: Int,
         onDismiss: (() -> ())? = nil,
         @ViewBuilder content: @escaping () -> Content) -> some View
-    where Content: View {
-        modifier(CustomDialogModifier(isPresented: isPresented, timeInterval: timeInterval, onDismiss: onDismiss, body: content))
+    where Content: View, V: Hashable {
+        modifier(CustomDialogModifier(selection: selection, tag: tag, timeInterval: timeInterval, onDismiss: onDismiss, body: content))
     }
 }
