@@ -11,7 +11,9 @@ import SwiftUI
 struct CustomDialogDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView {
+                ContentView()
+            }
         }
     }
 }

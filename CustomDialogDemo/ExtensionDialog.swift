@@ -12,15 +12,25 @@ private struct CustomDialogModifier<Body>: ViewModifier where Body: View {
     fileprivate typealias OnDismiss = (() -> ())
     private let onDismiss: OnDismiss?
     private let body: Body
-    private let isEnableCancel: Bool
-    @State private var isShow: Bool = false
+    private let cancellable: Cancellable
     init(
         isPresented: Binding<Bool>,
         isEnableCancel: Bool,
         onDismiss: OnDismiss?,
         @ViewBuilder body: @escaping () -> Body) {
             self._isPresented = isPresented
-            self.isEnableCancel = isEnableCancel
+            self.cancellable = .enable(isEnable: isEnableCancel)
+            self.onDismiss = onDismiss
+            self.body = body()
+        }
+    
+    init(
+        isPresented: Binding<Bool>,
+        timeInterval: Int,
+        onDismiss: OnDismiss?,
+        @ViewBuilder body: @escaping () -> Body) {
+            self._isPresented = isPresented
+            self.cancellable = .timeIntervel(timeInterval: timeInterval)
             self.onDismiss = onDismiss
             self.body = body()
         }
@@ -32,7 +42,19 @@ private struct CustomDialogModifier<Body>: ViewModifier where Body: View {
                 isPresented: $isPresented,
                 onDismiss: onDismiss) {
                     body
-                    .background(BackgroundDialog(isPresented: $isPresented, isEnableCancel: isEnableCancel))}
+                        .background(
+                            background
+                                .onAppear {
+                                    switch cancellable {
+                                    case .enable(let isEnable):
+                                        break
+                                    case .timeIntervel(let timeInterval):
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + DispatchTimeInterval.milliseconds(timeInterval)) {
+                                            isPresented = false
+                                        }
+                                    }
+                                })
+                }
     }
     
     @ViewBuilder private var contentOverlay: some View {
@@ -45,6 +67,25 @@ private struct CustomDialogModifier<Body>: ViewModifier where Body: View {
         } else {
             EmptyView()
         }
+    }
+}
+
+private extension CustomDialogModifier {
+    @ViewBuilder
+    var background: some View {
+        switch cancellable {
+        case .enable(let isEnableCancel):
+            BackgroundDialog(isPresented: $isPresented, isEnableCancel: isEnableCancel)
+        case .timeIntervel(_):
+            BackgroundDialog(isPresented: $isPresented, isEnableCancel: false)
+        }
+    }
+}
+
+private extension CustomDialogModifier {
+    enum Cancellable {
+        case enable(isEnable: Bool)
+        case timeIntervel(timeInterval: Int)
     }
 }
 
@@ -63,8 +104,6 @@ private struct BackgroundDialog: UIViewRepresentable {
             }
             
             parentView.backgroundColor = .clear
-            view.backgroundColor = .white
-            view.layer.cornerRadius = 16
             
             if isEnableCancel {
                 parentView.addGestureRecognizer(context.coordinator.dismissTap)
@@ -95,8 +134,9 @@ private struct BackgroundDialog: UIViewRepresentable {
                       return
                   }
             let touchPoint = sender.location(in: view)
-            if !(0...view.frame.width).contains(touchPoint.x) ||
-                !(0...view.frame.height).contains(touchPoint.y) {
+            let frame = view.frame
+            if !(0...frame.width).contains(touchPoint.x) ||
+                !(0...frame.height).contains(touchPoint.y) {
                 parent.isPresented = false
             }
         }
@@ -111,5 +151,14 @@ public extension View {
         @ViewBuilder content: @escaping () -> Content) -> some View
     where Content: View {
         modifier(CustomDialogModifier(isPresented: isPresented, isEnableCancel: isEnableCancel, onDismiss: onDismiss, body: content))
+    }
+    
+    func dialog<Content>(
+        isPresented: Binding<Bool>,
+        timeInterval: Int,
+        onDismiss: (() -> ())? = nil,
+        @ViewBuilder content: @escaping () -> Content) -> some View
+    where Content: View {
+        modifier(CustomDialogModifier(isPresented: isPresented, timeInterval: timeInterval, onDismiss: onDismiss, body: content))
     }
 }
